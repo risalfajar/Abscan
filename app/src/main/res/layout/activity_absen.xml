@@ -4,17 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".AbsenActivity">
 
     <com.camerakit.CameraKitView
         android:id="@+id/camera"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:adjustViewBounds="true"
         android:keepScreenOn="true"
-        app:camera_facing="front"
+        app:camera_facing="back"
         app:camera_flash="off"
         app:camera_focus="continuous"
         app:camera_permissions="camera" />
+
+    <TextView
+        android:id="@+id/tv_barcode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hasil"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textSize="24sp"/>
 
 </LinearLayout>
