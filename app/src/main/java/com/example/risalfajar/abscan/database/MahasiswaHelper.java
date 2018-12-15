@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.risalfajar.abscan.entity.Mahasiswa;
 
@@ -34,14 +35,13 @@ public class MahasiswaHelper {
     public ArrayList<Mahasiswa> query(){
         ArrayList<Mahasiswa> arrayList = new ArrayList<Mahasiswa>();
         Cursor cursor = database.query(DATABASE_TABLE, null, null, null, null, null,
-                DatabaseContract.MahasiswaColumns._ID + " DESC", null);
+                null, null);
         cursor.moveToFirst();
         Mahasiswa mahasiswa;
 
         if(cursor.getCount() > 0){
             do{
                 mahasiswa = new Mahasiswa();
-                mahasiswa.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns._ID)));
                 mahasiswa.setNama(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.NAME)));
                 mahasiswa.setNim(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.NIM)));
                 mahasiswa.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.EMAIL)));
@@ -54,13 +54,37 @@ public class MahasiswaHelper {
         return arrayList;
     }
 
+    public Mahasiswa query(String nim) {
+        Log.d(getClass().getSimpleName(), "Input query: " + nim);
+
+        Cursor cursor = database.query(DATABASE_TABLE, null, DatabaseContract.MahasiswaColumns.NIM + "= '" + nim + "'", null, null, null,
+                null, null);
+        cursor.moveToFirst();
+        Mahasiswa mahasiswa = null;
+
+        if (cursor.getCount() > 0) {
+            do {
+                mahasiswa = new Mahasiswa();
+                mahasiswa.setNama(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.NAME)));
+                mahasiswa.setNim(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.NIM)));
+                mahasiswa.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.EMAIL)));
+
+                Log.d(getClass().getSimpleName(), "Hasil query: " + mahasiswa.getNim());
+
+                cursor.moveToNext();
+            } while (!cursor.isAfterLast());
+        }
+        cursor.close();
+        return mahasiswa;
+    }
+
     public long insert(Mahasiswa mahasiswa){
         ContentValues initialValues = new ContentValues();
         initialValues.put(DatabaseContract.MahasiswaColumns.NAME, mahasiswa.getNama());
         initialValues.put(DatabaseContract.MahasiswaColumns.NIM, mahasiswa.getNim());
         initialValues.put(DatabaseContract.MahasiswaColumns.EMAIL, mahasiswa.getEmail());
 
-        return database.insert(DatabaseContract.TABLE_MHS, null, initialValues);
+        return database.insert(DATABASE_TABLE, null, initialValues);
     }
 
     public int update(Mahasiswa mahasiswa){
@@ -69,10 +93,10 @@ public class MahasiswaHelper {
         args.put(DatabaseContract.MahasiswaColumns.NIM, mahasiswa.getNim());
         args.put(DatabaseContract.MahasiswaColumns.EMAIL, mahasiswa.getEmail());
 
-        return database.update(DatabaseContract.TABLE_MHS, args, DatabaseContract.MahasiswaColumns._ID + "= '" + mahasiswa.getId() + "'", null);
+        return database.update(DATABASE_TABLE, args, DatabaseContract.MahasiswaColumns.NIM + "= '" + mahasiswa.getNim() + "'", null);
     }
 
-    public int delete(int id){
-        return database.delete(DatabaseContract.TABLE_MHS, DatabaseContract.MahasiswaColumns._ID + " = '" + id + "'", null);
+    public int delete(String nim) {
+        return database.delete(DATABASE_TABLE, DatabaseContract.MahasiswaColumns.NIM + " = '" + nim + "'", null);
     }
 }

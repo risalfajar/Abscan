@@ -9,10 +9,15 @@ import android.provider.BaseColumns;
 public class DatabaseContract {
 
     static String TABLE_MHS = "mahasiswa";
+    static String TABLE_ABSEN = "absen";
 
-    static final class MahasiswaColumns implements BaseColumns{
+    static final class MahasiswaColumns {
         static String NAME = "name";
         static String NIM = "nim";
         static String EMAIL = "email";
+    }
+
+    static final class AbsenColumns implements BaseColumns {
+        static String DATETIME = "datetime";
     }
 }

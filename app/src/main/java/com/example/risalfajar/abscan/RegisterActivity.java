@@ -2,6 +2,7 @@ package com.example.risalfajar.abscan;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -36,27 +37,42 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         String name = nameEt.getText().toString().trim();
-        String nim = nimEt.getText().toString().trim();
+        String nim = nimEt.getText().toString().trim().toUpperCase();
         String email = emailEt.getText().toString().trim();
 
-        if(TextUtils.isEmpty(name)) {
+        if (TextUtils.isEmpty(name)) {
             isEmptyFields = true;
             nameEt.setError("Field ini tidak boleh kosong");
         }
-        if(TextUtils.isEmpty(nim)) {
+        if (TextUtils.isEmpty(nim)) {
             isEmptyFields = true;
             nimEt.setError("Field ini tidak boleh kosong");
         }
-        if(TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(email)) {
             isEmptyFields = true;
             emailEt.setError("Field ini tidak boleh kosong");
         }
-        if(!isEmptyFields) {
+        if (nim.contains(" ")) {
+            isEmptyFields = true;
+            nimEt.setError("NIM tidak valid");
+        }
+        if (!isEmptyFields) {
             Register(name, nim, email);
         }
     }
 
     void Register(String name, String nim, String email) {
+        //Jika mahasiswa sudah terdaftar
+        if (mahasiswaHelper.query(nim) != null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Gagal")
+                    .setMessage("NIM sudah terdaftar sebelumnya")
+                    .create()
+                    .show();
+
+            return;
+        }
+
         Mahasiswa mahasiswa = new Mahasiswa();
         mahasiswa.setNama(name);
         mahasiswa.setNim(nim);
@@ -73,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mahasiswaHelper != null)
+        if (mahasiswaHelper != null)
             mahasiswaHelper.close();
     }
 }

@@ -17,15 +17,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     //SQL untuk membuat table mahasiswa
     private static final String SQL_CREATE_TABLE_MHS = String.format("CREATE TABLE %s" +
-            " (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " (%s TEXT PRIMARY KEY," +
             " %s TEXT NOT NULL," +
-            " %s TEXT NOT NULL," +
-            " %s TEXT NOT NULL)",
+                    " %s TEXT NOT NULL);",
             DatabaseContract.TABLE_MHS,
-            DatabaseContract.MahasiswaColumns._ID,
-            DatabaseContract.MahasiswaColumns.NAME,
             DatabaseContract.MahasiswaColumns.NIM,
+            DatabaseContract.MahasiswaColumns.NAME,
             DatabaseContract.MahasiswaColumns.EMAIL
+    );
+
+    //SQL untuk membuat table absen
+    private static final String SQL_CREATE_TABLE_ABSEN = String.format("CREATE TABLE %s" +
+                    " (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    " %s TEXT NOT NULL," +
+                    " %s TEXT NOT NULL," +
+                    " FOREIGN KEY (%s) REFERENCES %s(%s));",
+            DatabaseContract.TABLE_ABSEN,
+            DatabaseContract.AbsenColumns._ID,
+            DatabaseContract.AbsenColumns.DATETIME,
+            DatabaseContract.MahasiswaColumns.NIM,
+            DatabaseContract.MahasiswaColumns.NIM,
+            DatabaseContract.TABLE_MHS,
+            DatabaseContract.MahasiswaColumns.NIM
     );
 
     public DatabaseHelper(@Nullable Context context) {
@@ -36,6 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(SQL_CREATE_TABLE_MHS);
+        sqLiteDatabase.execSQL(SQL_CREATE_TABLE_ABSEN);
     }
 
     //Apabila terjadi perubahan skema table
@@ -43,6 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         //Menghapus table yang sudah ada
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DatabaseContract.TABLE_MHS);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DatabaseContract.TABLE_ABSEN);
         //Membuat table baru
         onCreate(sqLiteDatabase);
     }
