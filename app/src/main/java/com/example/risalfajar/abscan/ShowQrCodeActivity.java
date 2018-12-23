@@ -56,15 +56,15 @@ public class ShowQrCodeActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        String[] TO = {mahasiswa.getEmail()};
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setDataAndType(Uri.parse("mailto:"), "image/png")
-                .putExtra(Intent.EXTRA_EMAIL, TO)
-                .putExtra(Intent.EXTRA_SUBJECT, "QR Code untuk NIM" + mahasiswa.getNim())
-                .putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imgFile));
+        String email = mahasiswa.getEmail();
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto", email, null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "QR Code for " + mahasiswa.getNim());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imgFile));
 
         try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            startActivity(Intent.createChooser(emailIntent, "Send mail:"));
             finish();
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(ShowQrCodeActivity.this,
