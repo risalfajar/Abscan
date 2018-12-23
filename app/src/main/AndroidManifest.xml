@@ -30,7 +30,8 @@
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="barcode" />
 
-        <activity android:name=".AbsenActivity"/>
+        <activity android:name=".AbsenActivity" />
+        <activity android:name=".RekapDataActivity"></activity>
     </application>
 
 </manifest>

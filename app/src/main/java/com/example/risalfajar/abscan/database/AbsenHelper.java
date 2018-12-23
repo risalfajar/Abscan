@@ -70,6 +70,43 @@ public class AbsenHelper {
         return arrayList;
     }
 
+    /**
+     * Mereturn data absen pada tanggal dateString
+     * Berfungsi untuk mengecek data mahasiswa yang absen pada tanggal dateString
+     *
+     * @param dateString
+     * @return
+     */
+    public ArrayList<AbsenData> query(String dateString) {
+        ArrayList<AbsenData> arrayList = new ArrayList<>();
+        Cursor cursor = database.query(DATABASE_TABLE, new String[]{DatabaseContract.AbsenColumns.DATETIME, DatabaseContract.MahasiswaColumns.NIM},
+                "substr(" + DatabaseContract.AbsenColumns.DATETIME + ", -10)='" + dateString + "'",
+                null, null, null, null);
+        cursor.moveToFirst();
+        AbsenData data;
+
+        if (cursor.getCount() > 0) {
+            do {
+                data = new AbsenData();
+                data.setDatetime(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.AbsenColumns.DATETIME)));
+                data.setNim(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.MahasiswaColumns.NIM)));
+
+                arrayList.add(data);
+                cursor.moveToNext();
+            } while (!cursor.isAfterLast());
+        }
+        cursor.close();
+
+        Log.d(getClass().getSimpleName(), "Cursor count: " + cursor.getCount());
+        return arrayList;
+    }
+
+    /**
+     * Class ini berfungsi untuk mengecek apakah nim sudah terdaftar dan belum pernah melakukan absen pada tanggal dateString
+     *
+     * @param nim
+     * @param dateString
+     */
     public void absenCheck(String nim, String dateString) {
         //region Cek mahasiswa sudah terdaftar
         if (mahasiswaHelper.query(nim) == null) {
@@ -78,7 +115,7 @@ public class AbsenHelper {
             return;
         }
         //endregion
-        Cursor cursor = database.query(DATABASE_TABLE, null, DatabaseContract.MahasiswaColumns.NIM + "= '" + nim + "'", null, null, null, null);
+        Cursor cursor = database.query(DATABASE_TABLE, null, DatabaseContract.MahasiswaColumns.NIM + "='" + nim + "'", null, null, null, null);
         cursor.moveToFirst();
 
         Log.d(getClass().getSimpleName(), "Cursor Count: " + cursor.getCount());
@@ -105,6 +142,7 @@ public class AbsenHelper {
                 //endregion
                 if (dateRecorded != null) {
                     //Jika tanggal yang diinputkan sama dengan tanggal yang tersimpan dalam database
+                    //Mahasiswa sudah pernah absen
                     if (dateString.equals(dateRecorded)) {
                         absenResponse.onMahasiswaHaveAbsen(nim);
                         cursor.close();
@@ -114,6 +152,7 @@ public class AbsenHelper {
                 cursor.moveToNext();
             } while (!cursor.isAfterLast());
         }
+        //Mahasiswa belum absen pada hari ini
         absenResponse.onAbsenValid(nim);
         cursor.close();
     }

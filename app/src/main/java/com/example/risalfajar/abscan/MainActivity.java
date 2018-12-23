@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent absenIntent = new Intent(MainActivity.this, AbsenActivity.class);
                 startActivity(absenIntent);
                 break;
+            case R.id.btn_rekap_data:
+                Intent rekapIntent = new Intent(MainActivity.this, RekapDataActivity.class);
+                startActivity(rekapIntent);
+                break;
         }
     }
 }
